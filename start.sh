@@ -1,2 +1,2 @@
 #!/bin/bash
-python bots.py
+python bot.py
