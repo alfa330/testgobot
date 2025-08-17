@@ -34,7 +34,7 @@ async def send_welcome(message: types.Message):
     )
     keyboard = InlineKeyboardMarkup(row_width=2)
     keyboard.add(InlineKeyboardButton("✅", callback_data="age_yes"))
-    keyboard.add(InlineKeyboardButton("❌", callback_data="age_no"))
+    keyboard.insert(InlineKeyboardButton("❌", callback_data="age_no"))
     await message.answer(welcome_text, parse_mode="HTML", reply_markup=keyboard)
     await message.delete() 
 
@@ -55,7 +55,7 @@ async def process_age(callback_query: types.CallbackQuery):
         )
         keyboard = InlineKeyboardMarkup(row_width=2)
         keyboard.add(InlineKeyboardButton("Қазақша 🇰🇿", callback_data="lang_kz"))
-        keyboard.add(InlineKeyboardButton("Русский 🇷🇺", callback_data="lang_ru"))
+        keyboard.insert(InlineKeyboardButton("Русский 🇷🇺", callback_data="lang_ru"))
         user_language[user_id] = None  # Reset language preference
         await callback_query.message.answer(language_text, parse_mode="HTML", reply_markup=keyboard)
 
