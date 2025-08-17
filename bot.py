@@ -32,7 +32,7 @@ async def send_welcome(message: types.Message):
         "Аренда электровелосипедов для работы и свободы передвижения!\n\n"
         "<b>Вам есть 18 лет?</b>"
     )
-    keyboard = InlineKeyboardMarkup()
+    keyboard = InlineKeyboardMarkup(row_width=2)
     keyboard.add(InlineKeyboardButton("✅", callback_data="age_yes"))
     keyboard.add(InlineKeyboardButton("❌", callback_data="age_no"))
     await message.answer(welcome_text, parse_mode="HTML", reply_markup=keyboard)
