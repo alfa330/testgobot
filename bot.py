@@ -41,20 +41,28 @@ async def process_age(callback_query: types.CallbackQuery):
             parse_mode="HTML"
         )
     else:
-        options_text = (
-            "<b>Что вас интересует? 🚴‍♂️</b>\n"
-            "Выберите одну из опций ниже:"
-        )
-        keyboard = InlineKeyboardMarkup()
-        keyboard.add(InlineKeyboardButton("Аренда велосипеда", callback_data="rent_bike"))
-        keyboard.add(InlineKeyboardButton("Помощь с велосипедом", callback_data="bike_help"))
-        await callback_query.message.answer(options_text, parse_mode="HTML", reply_markup=keyboard)
+        await show_options(callback_query.message)
 
-# Handle user selection (rent or help)
-@dp.callback_query_handler(lambda c: c.data in ["rent_bike", "bike_help"])
+# Function to show main options menu
+async def show_options(message: types.Message):
+    options_text = (
+        "<b>Что вас интересует? 🚴‍♂️</b>\n"
+        "Выберите одну из опций ниже:"
+    )
+    keyboard = InlineKeyboardMarkup()
+    keyboard.add(InlineKeyboardButton("Аренда велосипеда", callback_data="rent_bike"))
+    keyboard.add(InlineKeyboardButton("Помощь с велосипедом", callback_data="bike_help"))
+    await message.answer(options_text, parse_mode="HTML", reply_markup=keyboard)
+
+# Handle user selection (rent, help, or back)
+@dp.callback_query_handler(lambda c: c.data in ["rent_bike", "bike_help", "back_to_options"])
 async def process_selection(callback_query: types.CallbackQuery):
     await callback_query.message.delete()  # Remove previous message
-    if callback_query.data == "rent_bike":
+    whatsapp_link = "https://wa.me/+77008088060"
+    
+    if callback_query.data == "back_to_options":
+        await show_options(callback_query.message)
+    elif callback_query.data == "rent_bike":
         rent_text = (
             "<b>Электровелосипед в аренду для курьеров — зарабатывай больше, трать меньше! 🚴‍♂️</b>\n\n"
             "Работаешь в доставке? Хочешь увеличить доход и сократить расходы?\n"
@@ -81,15 +89,18 @@ async def process_selection(callback_query: types.CallbackQuery):
             "<b>📦 Количество ограничено — успей забрать первым!</b>\n"
             "<b>📞 Контакт для аренды:</b> +7 700 808 80 60"
         )
-        await callback_query.message.answer(rent_text, parse_mode="HTML")
-    else:
-        whatsapp_link = "https://wa.me/+77008088060"
+        keyboard = InlineKeyboardMarkup()
+        keyboard.add(InlineKeyboardButton("Связаться в WhatsApp", url=whatsapp_link))
+        keyboard.add(InlineKeyboardButton("Назад", callback_data="back_to_options"))
+        await callback_query.message.answer(rent_text, parse_mode="HTML", reply_markup=keyboard)
+    else:  # bike_help
         help_text = (
             "<b>Нужна помощь с велосипедом? 🚴‍♂️</b>\n"
             "Свяжитесь с нашей службой поддержки в WhatsApp для быстрого решения любых вопросов!"
         )
         keyboard = InlineKeyboardMarkup()
         keyboard.add(InlineKeyboardButton("Перейти в WhatsApp", url=whatsapp_link))
+        keyboard.add(InlineKeyboardButton("Назад", callback_data="back_to_options"))
         await callback_query.message.answer(help_text, parse_mode="HTML", reply_markup=keyboard)
 
 # Run Flask and bot concurrently
